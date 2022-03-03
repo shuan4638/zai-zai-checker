@@ -1,4 +1,9 @@
 # zai-zai-checker
 在再糾察隊，終結台灣在再不分的亂象
 
-原始資料從[台達閱讀理解資料集 Delta Reading Comprehension Dataset (DRCD)](https://github.com/DRCKnowledgeTeam/DRCD)取得。
+- 設定虛擬環境:
+ https://pythonviz.com/vscode/visual-studio-code-virtual-environment-setup/
+- 參考:
+ https://huggingface.co/bert-base-uncased
+- API:
+ https://api-inference.huggingface.co/docs/python/html/quicktour.html#running-inference-with-api-requests
