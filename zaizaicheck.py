@@ -5,7 +5,7 @@ logging.set_verbosity_error()
 
 unmasker = pipeline('fill-mask', model="bert-base-chinese")
 
-txt = '閃尿逃兵整天對中國嗆，真的戰爭來在推年輕人去死。'
+txt = '我現在不想聽，請你不要在說了。'
 txt_mask = txt.replace('在', '[MASK]')
 txt_unmask = unmasker(txt_mask)
 print("你是不是想說:")
