@@ -1,15 +1,46 @@
-import pprint
-import numpy as np
-from transformers import BertModel, BertTokenizer, pipeline, logging
-logging.set_verbosity_error()
+import requests
 
-unmasker = pipeline('fill-mask', model="bert-base-chinese")
+API_URL = "https://api-inference.huggingface.co/models/bert-base-chinese"
+headers = {"Authorization": "Bearer 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"}
 
-txt = '閃尿逃兵整天對中國嗆，真的戰爭來在推年輕人去死。'
-txt_mask = txt.replace('在', '[MASK]')
-txt_unmask = unmasker(txt_mask)
-print("你是不是想說:")
-for i in range(8):
-    sequence = txt_unmask[i]['sequence'].replace(' ', '')
-    score = round(txt_unmask[i]['score'], 3)
-    print(f'{i+1}. {sequence} score: {score}')
+def query(payload):
+	response = requests.post(API_URL, headers=headers, json=payload)
+	return response.json()
+	
+    
+def multimask_predictions(txt, outputs, check_vocabs = ["再", "在"]):
+    all_outputs = {}
+    for i, i_output in enumerate(outputs):
+        for output in i_output:
+            pred_vocab = output['token_str']
+            if pred_vocab in check_vocabs:
+                all_outputs[i] = pred_vocab
+                break
+    corrected_txt = ''
+    pred_cnt = 0
+    for word in txt:
+        if word in check_vocabs:
+            if pred_cnt in all_outputs.keys():
+                word = all_outputs[pred_cnt]
+            pred_cnt += 1
+        corrected_txt += word
+    return corrected_txt
+    
+def main(check_vocabs):
+    txt = input("打中文: ") # 我在說一次
+    txt_mask = txt
+    for word in check_vocabs:
+        txt_mask = txt_mask.replace(word, '[MASK]')
+
+    output = query({ "inputs": txt_mask, })
+    if txt_mask.count('[MASK]') <= 1: # only one zai detected 
+        corrected_txt = output[0]['sequence'].replace(" ", "")
+    else:
+        corrected_txt = multimask_predictions(txt, output)
+    print(txt + " -> " + corrected_txt)
+    return 
+
+if __name__ == '__main__':
+    zai_zai = ['在', '再']
+    main(zai_zai)
+    
